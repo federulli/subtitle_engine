@@ -1,14 +1,12 @@
-import os
 import logging
+import os
 import sys
+
 from providers.open_subtitle_provider import OpenSubtitleProvider
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-logger = logging.getLogger(__file__)
+from settings import DIRECTORIES, VIDEO_EXTENSIONS
 
 provider = OpenSubtitleProvider()
-
-VIDEO_EXTENSIONS = {'webm', 'mkv', 'flv', 'vob', 'ogv', 'avi', 'mp4'}
 
 
 def get_subtitle_path(file_path):
@@ -31,7 +29,7 @@ def get_files(path):
     return files
 
 
-def download_subtitles_for_files_in_directory(path):
+def download_subtitles_for_files_in_directory(path, logger):
     for file_path in get_files(path):
         try:
             subtitle_path = get_subtitle_path(file_path)
@@ -41,8 +39,12 @@ def download_subtitles_for_files_in_directory(path):
                 provider.download(s_id, subtitle_path)
             else:
                 logger.info("No need to download subtitle for {}".format(file_path))
-        except:
-            logger.info("couldn't find subtitle for {}".format(path))
+        except Exception as e:
+            logger.info('ERROR: {}'.format(str(e)))
 
 if __name__ == '__main__':
-    download_subtitles_for_files_in_directory(sys.argv[1])
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    logger = logging.getLogger(__file__)
+    for directory in DIRECTORIES:
+        logger.info("Searching subtitles for videos in {}".format(directory))
+        download_subtitles_for_files_in_directory(directory, logger)
