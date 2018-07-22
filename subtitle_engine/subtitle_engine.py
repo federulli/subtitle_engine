@@ -1,10 +1,6 @@
-import logging
 import os
-import sys
-
 from providers.open_subtitle_provider import OpenSubtitleProvider
-
-from settings import DIRECTORIES, VIDEO_EXTENSIONS
+from settings import VIDEO_EXTENSIONS
 
 provider = OpenSubtitleProvider()
 
@@ -41,10 +37,3 @@ def download_subtitles_for_files_in_directory(path, logger):
                 logger.info("No need to download subtitle for {}".format(file_path))
         except Exception as e:
             logger.info('ERROR: {}'.format(str(e)))
-
-if __name__ == '__main__':
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    logger = logging.getLogger(__file__)
-    for directory in DIRECTORIES:
-        logger.info("Searching subtitles for videos in {}".format(directory))
-        download_subtitles_for_files_in_directory(directory, logger)
